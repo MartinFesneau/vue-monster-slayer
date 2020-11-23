@@ -26,7 +26,7 @@
       <section id="player" class="container">
         <h2>Your Health</h2>
         <div class="healthbar">
-        <div class="healthbar__value" :style="playerBarStyles"></div>
+          <div class="healthbar__value" :style="playerBarStyles"></div>
         </div>
       </section>
       <section class="container" v-if="winner">
@@ -38,13 +38,23 @@
       </section>
       <section id="controls" v-else>
         <button @click="attackMonster">ATTACK</button>
-        <button :disabled="disableSpecialAttack" @click="specialAttackMonster">SPECIAL ATTACK</button>
+        <button :disabled="disableSpecialAttack" @click="specialAttackMonster">
+          SPECIAL ATTACK
+        </button>
         <button @click="healPlayer">HEAL</button>
         <button @click="surrender">SURRENDER</button>
       </section>
       <section id="log" class="container">
         <h2>Battle Log</h2>
-        <ul></ul>
+        <ul>
+          <li v-for="logMessage in logMessages">
+            <span :class="{'log--player': logMessage.actionBy === 'Player', 'log--monster': logMessage.actionBy === 'Monster' }"> 
+              {{ logMessage.actionBy === "Player" ? "Player " : "Monster " }}
+            </span>
+            <span v-if="logMessage.actionWhat === 'heal'">heals himself for <span class="log--heal">{{ logMessage.actionValue }}</span></span>
+            <span v-else>attacks for <span class="log--damage">{{ logMessage.actionValue}}</span></span>
+          </li>
+        </ul>
       </section>
     </div>
   </body>

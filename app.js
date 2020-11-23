@@ -9,42 +9,43 @@ const app = Vue.createApp({
       monsterHP: 100,
       currentRound: 0,
       winner: null,
-    }
+      logMessages: [],
+    };
   },
   computed: {
     monsterBarStyles() {
       if (this.monsterHP < 0) {
-        return {width: '0%'};
+        return { width: "0%" };
       } else {
-        return {width: this.monsterHP + '%' };
+        return { width: this.monsterHP + "%" };
       }
     },
     playerBarStyles() {
       if (this.playerHP < 0) {
-        return {width: '0%'};
+        return { width: "0%" };
       } else {
-        return {width: this.playerHP + '%'};
+        return { width: this.playerHP + "%" };
       }
     },
     disableSpecialAttack() {
       return this.currentRound % 3 !== 0;
-    }
+    },
   },
   watch: {
     playerHP(value) {
       if (value <= 0 && this.monsterHP <= 0) {
         this.winner = "Draw";
-      } else if (value <=0) {
-        this.winner = "Monster";
+      } else if (value <= 0) {
+        this.winner = "monster";
       }
     },
     monsterHP(value) {
       if (value <= 0 && this.player <= 0) {
         this.winner = "Draw";
       } else if (value <= 0) {
-        this.winner = "Player";
+        this.winner = "player";
       }
-    }
+    },
   },
   methods: {
     startGame() {
@@ -52,21 +53,25 @@ const app = Vue.createApp({
       this.monsterHP = 100;
       this.winner = null;
       this.currentRound = 0;
+      this.logMessages = [];
     },
     attackMonster() {
       this.currentRound++;
-      const attackValue  = getRandomValue(5, 12);
+      const attackValue = getRandomValue(5, 12);
       this.monsterHP -= attackValue;
       this.attackPlayer();
+      this.addLogMessage("Player", "attack", attackValue);
     },
     attackPlayer() {
       const attackValue = getRandomValue(8, 15);
       this.playerHP -= attackValue;
+      this.addLogMessage("Monster", "attack", attackValue);
     },
     specialAttackMonster() {
       this.currentRound++;
       const attackValue = getRandomValue(15, 25);
       this.monsterHP -= attackValue;
+      this.addLogMessage("Player", "special attack", attackValue);
       this.attackPlayer();
     },
     healPlayer() {
@@ -77,12 +82,20 @@ const app = Vue.createApp({
       } else {
         this.playerHP += healValue;
       }
+      this.addLogMessage("Player", "heal", healValue);
       this.attackPlayer();
     },
     surrender() {
-      this.winner = "monster"
-    }
-  }
+      this.winner = "monster";
+    },
+    addLogMessage(who, what, value) {
+      this.logMessages.unshift({
+        actionBy: who,
+        actionWhat: what,
+        actionValue: value,
+      });
+    },
+  },
 });
 
 app.mount("#game");
